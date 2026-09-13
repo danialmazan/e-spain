@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-13 — signed net-country stacking
+
+- Corrected the net interconnector chart to use sign-separated stacking: each country's imports and exports are netted first, positive country totals stack upward, and negative country totals stack downward without crossing zero.
+- Files changed: `frontend/src/App.tsx`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run `npm run build`, choose `Net by country`, filter to April 2026, and confirm France's `+423 GWh` segment is blue above zero while Portugal, Morocco, and Andorra stack below zero.
+
 ## 2026-09-13 — interconnector tooltip colours
 
 - Restored each country's series colour in the cross-border hover/tap data card while preserving the dark tooltip surface and transparent chart cursor; forced localized grouping for four-digit tooltip values, including Spanish `1.055`.

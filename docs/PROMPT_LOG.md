@@ -1,5 +1,9 @@
 # Prompt Log
 
+## 2026-09-13 22:17 Europe/Madrid
+
+- Prompt: "This is wrong. If France is positive, it should show. In the net option, net imports/exports by country and stack positive country bars upward and negative country bars downward."
+
 ## 2026-09-13 17:43 Europe/Madrid
 
 - Prompt: "In the 'Cross-border electricity flows' chart, keep the colour for the countries in the text of the hover/tap data cards. With the last changes to the chart, it's all white now. Implement this change and commit, push, deploy."
