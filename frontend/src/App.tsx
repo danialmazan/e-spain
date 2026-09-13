@@ -68,7 +68,11 @@ const allTech = Object.values(TECH);
 const techByKey = new Map(allTech.map((tech) => [tech.key, tech]));
 const getLang = (): Language => new URLSearchParams(location.search).get("lang") === "es" ? "es" : "en";
 const locale = (lang: Language) => lang === "es" ? "es-ES" : "en-GB";
-const formatInteger = (value: number, lang: Language) => new Intl.NumberFormat(locale(lang), { maximumFractionDigits: 0 }).format(Math.round(value));
+const formatInteger = (value: number, lang: Language) => {
+  const rounded = Math.round(value); const formatted = new Intl.NumberFormat(locale(lang), { maximumFractionDigits: 0, useGrouping: true }).format(rounded);
+  if (Math.abs(rounded) >= 1000 && Math.abs(rounded) < 10000 && !/[.,\s]/.test(formatted)) { const digits = String(Math.abs(rounded)); return `${rounded < 0 ? "-" : ""}${digits.slice(0, -3)}${lang === "es" ? "." : ","}${digits.slice(-3)}`; }
+  return formatted;
+};
 const formatPrice = (value: number, lang: Language) => new Intl.NumberFormat(locale(lang), { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 const compact = (value: number, lang: Language) => new Intl.NumberFormat(locale(lang), { notation: "compact", maximumFractionDigits: 1 }).format(value);
 const month = (value: string, lang: Language) => new Intl.DateTimeFormat(locale(lang), { month: "short", year: "2-digit", timeZone: "UTC" }).format(new Date(`${value}-01T00:00:00Z`));

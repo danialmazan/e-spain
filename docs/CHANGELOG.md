@@ -2,7 +2,7 @@
 
 ## 2026-09-13 — interconnector tooltip colours
 
-- Restored each country's series colour in the cross-border hover/tap data card while preserving the dark tooltip surface and transparent chart cursor.
+- Restored each country's series colour in the cross-border hover/tap data card while preserving the dark tooltip surface and transparent chart cursor; forced localized grouping for four-digit tooltip values, including Spanish `1.055`.
 - Files changed: `frontend/src/App.tsx`, `docs/RUNBOOK.md`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
 - Reproduce: run `npm run build`, open Interconnectors, and hover or tap a month in both chart modes; each country label should match its chart colour.
 
