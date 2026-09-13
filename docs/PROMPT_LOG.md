@@ -1,5 +1,17 @@
 # Prompt Log
 
+## 2026-09-13 17:43 Europe/Madrid
+
+- Prompt: "In the 'Cross-border electricity flows' chart, keep the colour for the countries in the text of the hover/tap data cards. With the last changes to the chart, it's all white now. Implement this change and commit, push, deploy."
+
+## 2026-09-13 17:36 Europe/Madrid
+
+- Prompt: "Changes: stack countries in cross-border flows; add imports/exports versus net modes and country toggles; remove the white hover/tap background; default hourly coverage to Solar PV; remove the battery/pumped-storage note."
+
+## 2026-09-13 17:05 Europe/Madrid
+
+- Prompt: "Several changes: rename the dashboard to E-Spain; remove 'verified data'; add synchronized generation technology toggles and date filters; standardize tooltip numbers, units and labels; redesign coverage controls; add monthly installed capacity and battery context; move System before Marginal price; clarify e-sios versus REData/OMIE dependencies; and verify mobile UX."
+
 ## 2026-09-09 10:49 Europe/Madrid
 
 - Prompt: "PLEASE IMPLEMENT THIS PLAN: # REE Electricity Dashboard Revamp ... the github page/site must be called 'ree-dashboard', not 'test_ree'."

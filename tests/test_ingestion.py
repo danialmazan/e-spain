@@ -37,6 +37,16 @@ class IngestionTests(unittest.TestCase):
         self.assertEqual(len(normalized), 2)
         self.assertAlmostEqual(sum(row["share"] for row in normalized), 100.0)
 
+    def test_physical_exchange_signs_are_preserved(self):
+        module = load_script("ingest_sources.py")
+        payload = {"included": [
+            {"attributes": {"type": "import", "values": [{"datetime": "2025-01-01", "value": 1250}]}},
+            {"attributes": {"type": "export", "values": [{"datetime": "2025-01-01", "value": -750}]}},
+            {"attributes": {"type": "saldo", "values": [{"datetime": "2025-01-01", "value": 500}]}},
+        ]}
+        rows = module.flatten_exchanges(payload, "France", "2025-01")
+        self.assertEqual([row["value_gwh"] for row in rows], [1.25, -0.75])
+
     def test_validator_rejects_post_cutoff_marginal_classification(self):
         module = load_script("validate_data.py")
         payload = {"schema_version": 1, "generation": [{"period": "2019-01", "series": "Eólica", "value": 1, "share": 100}], "hourly": {"status": "unavailable", "years": []}, "marginal_technology": {"cutoff": "2025-03-18T23:00:00+01:00", "rows": [{"timestamp": "2025-03-19T00:00:00+01:00"}]}}

@@ -1,4 +1,4 @@
-# REE Dashboard runbook
+# E-Spain runbook
 
 ## 1. Install
 
@@ -21,7 +21,7 @@ source .env
 set +a
 ```
 
-Add the same value as the `ESIOS_TOKEN` GitHub Actions secret. Without it, the pipeline still publishes verified monthly REData and OMIE data, while hourly modules visibly report `token_required`.
+Add the same value as the `ESIOS_TOKEN` GitHub Actions secret. Without it, the pipeline still publishes monthly REData generation, capacity, storage and physical border exchanges plus OMIE prices, while hourly generation/coverage modules visibly report `token_required`.
 
 ## 3. Refresh sources
 

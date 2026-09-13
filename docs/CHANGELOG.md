@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-09-13 — interconnector tooltip colours
+
+- Restored each country's series colour in the cross-border hover/tap data card while preserving the dark tooltip surface and transparent chart cursor.
+- Files changed: `frontend/src/App.tsx`, `docs/RUNBOOK.md`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run `npm run build`, open Interconnectors, and hover or tap a month in both chart modes; each country label should match its chart colour.
+
+## 2026-09-13 — interconnector controls
+
+- Changed cross-border flows to stacked country columns, with separate `Imports + exports` and signed `Net by country` modes and independent France, Portugal, Morocco, and Andorra visibility toggles.
+- Removed the light Recharts hover/tap cursor and explicitly retained the dashboard's navy tooltip surface.
+- Changed hourly coverage's default technology set to Solar PV only and removed the storage-capacity explanatory note.
+- Files changed: `frontend/src/App.tsx`, `frontend/src/styles.css`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run `npm run build`, open Interconnectors, switch modes and toggle countries; then open Coverage and confirm only Solar PV is active by default.
+
+## 2026-09-13
+
+- Renamed the product to E-Spain and refined the Grid Monitor interface, removing the generated-at header and methodological "verified data" language.
+- Added shared generation presets, individual technology toggles, synchronized date/source state across the monthly mix and rolling trend, and consistently rounded/localized chart tooltips with units and technology names.
+- Replaced synthetic interconnector flows with official monthly REData physical exchanges for France, Portugal, Morocco, and Andorra; imports are positive and exports negative.
+- Added coverage source/threshold/date controls with an explicit hourly-data unavailable state, moved System before Marginal price, replaced the capacity bars with monthly installed-capacity lines, added battery versus pumped-storage capacity, and explained the CO2-associated generation series.
+- Extended ingestion, validation, contracts, fixtures, provenance, and published data for physical exchanges and storage. Refreshed official data through the latest complete month available from each widget.
+- Completed EN/ES desktop and 390px interaction QA, including preset reset behavior, horizontal control scrolling, body overflow, tap targets, and browser-console checks.
+- Files changed: `scripts/`, `tests/`, `frontend/`, `README.md`, `docs/RUNBOOK.md`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run `python3 scripts/ingest_sources.py --start-year 2019 --end-year 2026 --omie-days 120`, `python3 scripts/validate_data.py`, `python3 -m unittest discover -s tests`, and `npm run build`; inspect EN/ES at desktop and 390px.
+
 ## 2026-09-09
 
 - Rebuilt the project as REE Dashboard with a static Grid Monitor interface, complete EN/ES UI, real REData monthly generation/demand/capacity/carbon-context data, an OMIE price adapter, strict provenance/validation, token-safe e·sios configuration, and GitHub Pages deployment at `/ree-dashboard/`.

@@ -1,4 +1,4 @@
-"""Pinned public-source configuration for REE Dashboard."""
+"""Pinned public-source configuration for E-Spain."""
 
 REDATA_BASE = "https://apidatos.ree.es/es/datos"
 OMIE_DOWNLOAD = "https://www.omie.es/en/file-download"
@@ -9,6 +9,18 @@ REDATA_WIDGETS = {
     "demand": "demanda/evolucion",
     "capacity": "generacion/potencia-instalada-generacion",
     "emissions_context": "generacion/evolucion-estructura-generacion-emisiones-asociadas",
+}
+
+REDATA_EXCHANGE_WIDGETS = {
+    "France": "intercambios/francia-frontera",
+    "Portugal": "intercambios/portugal-frontera",
+    "Morocco": "intercambios/marruecos-frontera",
+    "Andorra": "intercambios/andorra-frontera",
+}
+
+REDATA_STORAGE_WIDGETS = {
+    "storage_energy": "almacenamiento/energia-almacenamiento",
+    "storage_capacity": "almacenamiento/potencia-instalada-almacenamiento",
 }
 
 # These are REE's peninsular, measured-real-time indicators. The ingestion

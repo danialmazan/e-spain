@@ -44,6 +44,17 @@ def validate(payload: dict) -> list[str]:
             break
     if payload.get("hourly", {}).get("status") == "unavailable" and payload.get("hourly", {}).get("years"):
         errors.append("unavailable hourly module contains data")
+    exchange_seen = set()
+    for row in payload.get("exchanges", []):
+        key = (row.get("period"), row.get("country"), row.get("direction"))
+        if key in exchange_seen:
+            errors.append(f"duplicate exchange row: {key}")
+            break
+        exchange_seen.add(key)
+        if row.get("direction") == "import" and row.get("value_gwh", 0) < 0:
+            errors.append(f"negative import: {key}")
+        if row.get("direction") == "export" and row.get("value_gwh", 0) > 0:
+            errors.append(f"positive export: {key}")
     return errors
 
 
