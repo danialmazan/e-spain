@@ -1,14 +1,180 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-13T15:02:05+00:00",
+  "generated_at": "2026-09-14T14:29:22+00:00",
   "dashboard": {
     "path": "dashboard.json",
-    "sha256": "6ef36a292e0cd0ca59fc51b0bae73feff6276dab33bf0be49bb6690d11ecc10e",
-    "bytes": 344620
+    "sha256": "a234dbcfd5164aa189715d2379fb4c2f5159e3c5b2af7aa383685309039b1c80",
+    "bytes": 351572
   },
   "coverage": {
     "monthly_start": "2019-01",
     "monthly_end": "2026-08",
-    "hourly_status": "unavailable"
+    "hourly_status": "available",
+    "hourly_start": "2018-12-31T23:00:00Z",
+    "hourly_end": "2026-09-13T21:00:00Z"
+  },
+  "hourly": {
+    "files": [
+      {
+        "year": 2019,
+        "path": "hourly/2019.json",
+        "sha256": "96f304407aed4665cf8ba52b49b31dd6d0b86e8fa2139eb5f2936ad2c60a3366",
+        "bytes": 924287,
+        "rows": 8760,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 8760,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      },
+      {
+        "year": 2020,
+        "path": "hourly/2020.json",
+        "sha256": "0a3864ed5e4ce8f172be84ad27c99a1482fbea14bc5231cf197b23725f1d3c97",
+        "bytes": 926043,
+        "rows": 8784,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 8784,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      },
+      {
+        "year": 2021,
+        "path": "hourly/2021.json",
+        "sha256": "2c2444dc7d67f9a28355100086943f5e7ab8f527628be521f05b056503530879",
+        "bytes": 924463,
+        "rows": 8760,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 8760,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      },
+      {
+        "year": 2022,
+        "path": "hourly/2022.json",
+        "sha256": "d3778541c41238d842d9fd75e95fe13ccc495919303ea9c7d0cfc693bbe02133",
+        "bytes": 935216,
+        "rows": 8760,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 8562,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      },
+      {
+        "year": 2023,
+        "path": "hourly/2023.json",
+        "sha256": "b1e36c2d94d12691c49fdabf838bbdcce8682986dacf6625a4fa8565fd9cd304",
+        "bytes": 941261,
+        "rows": 8760,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 8760,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      },
+      {
+        "year": 2024,
+        "path": "hourly/2024.json",
+        "sha256": "c9744160653732f81a6805a518dabdf18e7b77ffd990d3ea234d7282d0944e04",
+        "bytes": 943848,
+        "rows": 8784,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 8704,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      },
+      {
+        "year": 2025,
+        "path": "hourly/2025.json",
+        "sha256": "a71f8da79bfb0083da7327e9d626db96dbdb8bd3f8a855e1c0242af04c3b85cc",
+        "bytes": 929817,
+        "rows": 8760,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 8346,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      },
+      {
+        "year": 2026,
+        "path": "hourly/2026.json",
+        "sha256": "0dd34600fc225755f0982d152bcca72e11f570565e57e5cd26bfb5cb8aa22601",
+        "bytes": 645672,
+        "rows": 6143,
+        "missing_by_column": {
+          "demand": 0,
+          "hydro": 0,
+          "coal": 0,
+          "fuel_gas": 3971,
+          "nuclear": 0,
+          "combined_cycle": 0,
+          "wind": 0,
+          "solar_thermal": 0,
+          "solar_pv": 0,
+          "other_renewables": 0,
+          "cogeneration": 0
+        }
+      }
+    ]
   }
 }

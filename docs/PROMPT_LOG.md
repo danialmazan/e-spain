@@ -1,5 +1,17 @@
 # Prompt Log
 
+## 2026-09-16 23:09 Europe/Madrid
+
+- Prompt: "Move the page selection below the E-Spain title, vertically align the identity text, align and fix dismissal of the daily-shape filter controls, verify Android/iOS mobile behavior, and remove the Marginal price section plus its Sources / method material."
+
+## 2026-09-16 19:50 Europe/Madrid
+
+- Prompt: "Changes: move the Spain's electricity system text beside E-Spain and self-link it; add independent month, week, weekday and multi-date controls to The shape of a day; improve cross-border and coverage copy; explain the marginal price page; move source links to a Sources or Method page; and add a portfolio/update footer."
+
+## 2026-09-14 16:25 Europe/Madrid
+
+- Prompt: "ESIOS_TOKEN saved in .Renviron. Refresh the dashboard accordingly"
+
 ## 2026-09-13 22:17 Europe/Madrid
 
 - Prompt: "This is wrong. If France is positive, it should show. In the net option, net imports/exports by country and stack positive country bars upward and negative country bars downward."
@@ -75,3 +87,6 @@
 ## 2026-03-27 09:58 Europe/Madrid
 
 - Prompt: "This is still wrong. Imports are the bars above zero ..."
+## 2026-09-15 08:44 Europe/Madrid
+
+- Prompt: "can you change the site this project is deployed to from danielalmazan.com/ree-dashboard to danielalmazan.com/e-spain?"

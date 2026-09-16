@@ -19,6 +19,7 @@ data/
 .env
 .env.*
 !.env.example
+.Renviron
 
 # ---- Outputs (keep repo clean) ----
 output/

@@ -47,10 +47,22 @@ class IngestionTests(unittest.TestCase):
         rows = module.flatten_exchanges(payload, "France", "2025-01")
         self.assertEqual([row["value_gwh"] for row in rows], [1.25, -0.75])
 
+    def test_dst_repeated_hour_offsets_map_to_distinct_utc_instants(self):
+        from datetime import datetime, timezone
+        first = datetime.fromisoformat("2019-10-27T02:00:00.000+02:00").astimezone(timezone.utc)
+        second = datetime.fromisoformat("2019-10-27T02:00:00.000+01:00").astimezone(timezone.utc)
+        self.assertEqual(first.isoformat(), "2019-10-27T00:00:00+00:00")
+        self.assertEqual(second.isoformat(), "2019-10-27T01:00:00+00:00")
+
     def test_validator_rejects_post_cutoff_marginal_classification(self):
         module = load_script("validate_data.py")
         payload = {"schema_version": 1, "generation": [{"period": "2019-01", "series": "Eólica", "value": 1, "share": 100}], "hourly": {"status": "unavailable", "years": []}, "marginal_technology": {"cutoff": "2025-03-18T23:00:00+01:00", "rows": [{"timestamp": "2025-03-19T00:00:00+01:00"}]}}
         self.assertIn("marginal technology extends beyond source cutoff", module.validate(payload))
+
+    def test_hourly_validator_rejects_duplicate_utc_intervals(self):
+        module = load_script("validate_data.py")
+        shard = {"year": 2025, "columns": ["timestamp_utc", "demand"], "rows": [["2025-01-01T00:00:00Z", 10], ["2025-01-01T00:00:00Z", 11]], "missing_by_column": {"demand": 0}}
+        self.assertIn("hourly shard contains duplicate UTC timestamps", module.validate_hourly_shard(shard))
 
 
 if __name__ == "__main__":

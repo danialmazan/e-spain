@@ -35,13 +35,33 @@ ESIOS_INDICATORS = {
     "wind": {"id": 551, "expected": "eólica"},
     "solar_thermal": {"id": 1294, "expected": "térmica"},
     "solar_pv": {"id": 1295, "expected": "fotovoltaica"},
-    "cogeneration": {"id": 1296, "expected": "cogeneración"},
-    "other": {"id": 1297, "expected": "resto"},
+    "other_renewables": {"id": 1296, "expected": "térmica renovable"},
+    "cogeneration": {"id": 1297, "expected": "cogeneración y resto"},
     "portugal": {"id": 10044, "expected": "Portugal"},
     "france": {"id": 10045, "expected": "Francia"},
     "morocco": {"id": 10046, "expected": "Marruecos"},
     "andorra": {"id": 10047, "expected": "Andorra"},
 }
+
+# Hourly dashboard shards use measured peninsular power series only. Border
+# indicators remain pinned and catalogue-validated for the future hourly flow
+# module; the current cross-border chart uses REData's measured monthly flows.
+ESIOS_HOURLY_KEYS = (
+    "demand",
+    "hydro",
+    "coal",
+    "fuel_gas",
+    "nuclear",
+    "combined_cycle",
+    "wind",
+    "solar_thermal",
+    "solar_pv",
+    "other_renewables",
+    "cogeneration",
+)
+
+ESIOS_EXPECTED_MAGNITUDE = "Potencia"
+ESIOS_EXPECTED_SOURCE_FREQUENCIES = ("Cinco minutos", "Diez minutos")
 
 PENINSULAR_GEO_ID = 8741
 MARGINAL_TECHNOLOGY_CUTOFF = "2025-03-18T23:00:00+01:00"

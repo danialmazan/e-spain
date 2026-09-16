@@ -16,6 +16,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import unicodedata
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -23,6 +24,9 @@ from typing import Any
 
 from source_config import (
     ESIOS_BASE,
+    ESIOS_EXPECTED_MAGNITUDE,
+    ESIOS_EXPECTED_SOURCE_FREQUENCIES,
+    ESIOS_HOURLY_KEYS,
     ESIOS_INDICATORS,
     MARGINAL_TECHNOLOGY_CUTOFF,
     OMIE_DOWNLOAD,
@@ -55,7 +59,11 @@ def fetch_json(url: str, headers: dict[str, str] | None = None) -> dict[str, Any
     return json.loads(fetch_bytes(url, headers).decode("utf-8"))
 
 
-def red_data(widget: str, year: int) -> dict[str, Any]:
+def red_data(widget: str, year: int, refresh: bool = False) -> dict[str, Any]:
+    cache = RAW / "redata" / widget.replace("/", "_")
+    path = cache / f"{year}.json"
+    if path.exists() and not refresh:
+        return json.loads(path.read_text(encoding="utf-8"))
     query = urllib.parse.urlencode(
         {
             "start_date": f"{year}-01-01T00:00",
@@ -67,9 +75,8 @@ def red_data(widget: str, year: int) -> dict[str, Any]:
     payload = fetch_json(url)
     if "included" not in payload or "data" not in payload:
         raise ValueError(f"Unexpected REData response for {widget}/{year}")
-    cache = RAW / "redata" / widget.replace("/", "_")
     cache.mkdir(parents=True, exist_ok=True)
-    (cache / f"{year}.json").write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     return payload
 
 
@@ -175,22 +182,166 @@ def omie_monthly(days: int, today: date) -> list[dict[str, Any]]:
 
 
 def esios_probe(token: str) -> dict[str, Any]:
-    """Validate the configured e·sios catalogue without publishing partial hourly data."""
-    headers = {
-        "Accept": "application/json; application/vnd.esios-api-v1+json",
-        "Content-Type": "application/json",
-        "x-api-key": token,
-    }
+    """Validate the pinned IDs and names against the live e·sios catalogue."""
+    headers = esios_headers(token)
     catalog = fetch_json(f"{ESIOS_BASE}/indicators", headers)
     available = {int(item["id"]): item.get("name", "") for item in catalog.get("indicators", [])}
     checks = []
     for key, config in ESIOS_INDICATORS.items():
         name = available.get(config["id"], "")
-        checks.append({"key": key, "id": config["id"], "name": name, "available": bool(name)})
-    if not all(check["available"] for check in checks):
-        missing = [check["id"] for check in checks if not check["available"]]
-        raise ValueError(f"Configured e·sios indicators missing from catalogue: {missing}")
+        expected = normalize_text(config["expected"])
+        valid = bool(name) and expected in normalize_text(name)
+        checks.append({"key": key, "id": config["id"], "name": name, "valid": valid})
+    if not all(check["valid"] for check in checks):
+        invalid = [f'{check["id"]}: {check["name"] or "missing"}' for check in checks if not check["valid"]]
+        raise ValueError(f"Configured e·sios indicators failed catalogue validation: {invalid}")
     return {"geo_id": PENINSULAR_GEO_ID, "indicators": checks}
+
+
+def normalize_text(value: str) -> str:
+    return "".join(
+        character for character in unicodedata.normalize("NFKD", value.casefold())
+        if not unicodedata.combining(character)
+    )
+
+
+def esios_headers(token: str) -> dict[str, str]:
+    return {
+        "Accept": "application/json; application/vnd.esios-api-v1+json",
+        "Content-Type": "application/json",
+        "x-api-key": token,
+    }
+
+
+def esios_indicator_url(indicator_id: int, start: str, end: str) -> str:
+    query = urllib.parse.urlencode(
+        {
+            "start_date": start,
+            "end_date": end,
+            "geo_ids[]": PENINSULAR_GEO_ID,
+            "time_trunc": "hour",
+        }
+    )
+    return f"{ESIOS_BASE}/indicators/{indicator_id}?{query}"
+
+
+def validate_esios_metadata(key: str, indicator: dict[str, Any]) -> dict[str, Any]:
+    config = ESIOS_INDICATORS[key]
+    name = str(indicator.get("name", ""))
+    magnitudes = [str(item.get("name", "")) for item in indicator.get("magnitud") or []]
+    frequencies = [str(item.get("name", "")) for item in indicator.get("tiempo") or []]
+    geos = indicator.get("geos") or []
+    if int(indicator.get("id", -1)) != config["id"]:
+        raise ValueError(f"e·sios {key}: unexpected indicator id")
+    if normalize_text(config["expected"]) not in normalize_text(name):
+        raise ValueError(f"e·sios {key}: unexpected name {name!r}")
+    if ESIOS_EXPECTED_MAGNITUDE not in magnitudes:
+        raise ValueError(f"e·sios {key}: expected power magnitude, got {magnitudes}")
+    source_frequency = next((frequency for frequency in ESIOS_EXPECTED_SOURCE_FREQUENCIES if frequency in frequencies), None)
+    if source_frequency is None:
+        raise ValueError(f"e·sios {key}: unexpected source frequency {frequencies}")
+    if geos and not any(int(item.get("geo_id", -1)) == PENINSULAR_GEO_ID for item in geos):
+        raise ValueError(f"e·sios {key}: peninsular geography unavailable")
+    return {
+        "id": config["id"],
+        "name": name,
+        "unit": "MW",
+        "source_frequency": source_frequency,
+        "published_frequency": "hour",
+        "geo_id": PENINSULAR_GEO_ID,
+        "geo_name": next((item.get("geo_name") for item in geos if int(item.get("geo_id", -1)) == PENINSULAR_GEO_ID), "Península"),
+        "values_updated_at": indicator.get("values_updated_at"),
+        "available_in_query": bool(indicator.get("values")),
+    }
+
+
+def fetch_esios_indicator(token: str, key: str, year: int, end: str, refresh: bool) -> tuple[dict[str, float], dict[str, Any]]:
+    cache = RAW / "esios" / key
+    cache.mkdir(parents=True, exist_ok=True)
+    path = cache / f"{year}.json"
+    if path.exists() and not refresh:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    else:
+        payload = fetch_json(
+            esios_indicator_url(ESIOS_INDICATORS[key]["id"], f"{year}-01-01T00:00", end),
+            esios_headers(token),
+        )
+        path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    indicator = payload.get("indicator") or {}
+    metadata = validate_esios_metadata(key, indicator)
+    values: dict[str, float] = {}
+    for item in indicator.get("values") or []:
+        if int(item.get("geo_id", -1)) != PENINSULAR_GEO_ID:
+            continue
+        local_timestamp = str(item.get("datetime", ""))
+        if not local_timestamp:
+            continue
+        # REE's datetime_utc field duplicates the autumn repeated hour in some
+        # historical responses. The offset-aware local value distinguishes the
+        # +02:00 and +01:00 observations, so derive canonical UTC from it.
+        timestamp = datetime.fromisoformat(local_timestamp).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        if timestamp in values:
+            raise ValueError(f"e·sios {key}/{year}: duplicate timestamp {timestamp}")
+        values[timestamp] = round(float(item["value"]), 3)
+    return values, metadata
+
+
+def build_esios_hourly(token: str, start_year: int, end_year: int, today: date, force: bool = False) -> dict[str, Any]:
+    """Download measured hourly power and write compact, UTC-normalized yearly shards."""
+    catalog = esios_probe(token)
+    hourly_dir = PUBLIC / "hourly"
+    hourly_dir.mkdir(parents=True, exist_ok=True)
+    complete_day = today - timedelta(days=1)
+    years: list[int] = []
+    files: list[dict[str, Any]] = []
+    indicator_metadata: dict[str, Any] = {}
+    overall_start: str | None = None
+    overall_end: str | None = None
+    columns = ["timestamp_utc", *ESIOS_HOURLY_KEYS]
+
+    for year in range(start_year, end_year + 1):
+        if year > complete_day.year:
+            continue
+        end = f"{year}-12-31T23:59" if year < complete_day.year else f"{complete_day:%Y-%m-%d}T23:59"
+        series: dict[str, dict[str, float]] = {}
+        for key in ESIOS_HOURLY_KEYS:
+            values, metadata = fetch_esios_indicator(
+                token, key, year, end, refresh=force or year == complete_day.year
+            )
+            series[key] = values
+            indicator_metadata[key] = metadata
+        timestamps = sorted(set().union(*(values.keys() for values in series.values())))
+        rows = [[timestamp, *[series[key].get(timestamp) for key in ESIOS_HOURLY_KEYS]] for timestamp in timestamps]
+        missing = {key: sum(row[index + 1] is None for row in rows) for index, key in enumerate(ESIOS_HOURLY_KEYS)}
+        shard = {
+            "schema_version": 1,
+            "year": year,
+            "timezone": "Europe/Madrid",
+            "utc_normalization": "derived_from_offset_aware_source_datetime",
+            "geography": {"geo_id": PENINSULAR_GEO_ID, "name": "Península"},
+            "unit": "MW",
+            "columns": columns,
+            "rows": rows,
+            "missing_by_column": missing,
+        }
+        path = hourly_dir / f"{year}.json"
+        path.write_text(json.dumps(shard, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        years.append(year)
+        overall_start = timestamps[0] if overall_start is None else min(overall_start, timestamps[0])
+        overall_end = timestamps[-1] if overall_end is None else max(overall_end, timestamps[-1])
+        files.append({"year": year, "path": f"hourly/{year}.json", "sha256": sha256(path), "bytes": path.stat().st_size, "rows": len(rows), "missing_by_column": missing})
+
+    return {
+        "status": "available",
+        "years": years,
+        "start_utc": overall_start,
+        "end_utc": overall_end,
+        "columns": columns,
+        "files": files,
+        "catalogue": catalog,
+        "indicators": indicator_metadata,
+        "provisional": True,
+    }
 
 
 def sha256(path: Path) -> str:
@@ -203,6 +354,7 @@ def main() -> None:
     parser.add_argument("--end-year", type=int, default=datetime.now().year)
     parser.add_argument("--omie-days", type=int, default=120)
     parser.add_argument("--skip-omie", action="store_true")
+    parser.add_argument("--force-esios", action="store_true")
     args = parser.parse_args()
 
     RAW.mkdir(parents=True, exist_ok=True)
@@ -220,7 +372,7 @@ def main() -> None:
 
     for year in range(args.start_year, args.end_year + 1):
         for key, widget in REDATA_WIDGETS.items():
-            payload = red_data(widget, year)
+            payload = red_data(widget, year, refresh=year == args.end_year)
             source_updates[key] = max(
                 source_updates.get(key, ""), payload["data"]["attributes"].get("last-update", "")
             )
@@ -236,7 +388,7 @@ def main() -> None:
                 emissions.extend(rows)
 
         for country, widget in REDATA_EXCHANGE_WIDGETS.items():
-            payload = red_data(widget, year)
+            payload = red_data(widget, year, refresh=year == args.end_year)
             key = f"exchange_{country.lower()}"
             source_updates[key] = max(
                 source_updates.get(key, ""), payload["data"]["attributes"].get("last-update", "")
@@ -244,7 +396,7 @@ def main() -> None:
             exchanges.extend(flatten_exchanges(payload, country, last_complete_month))
 
         for key, widget in REDATA_STORAGE_WIDGETS.items():
-            payload = red_data(widget, year)
+            payload = red_data(widget, year, refresh=year == args.end_year)
             source_updates[key] = max(
                 source_updates.get(key, ""), payload["data"]["attributes"].get("last-update", "")
             )
@@ -260,7 +412,7 @@ def main() -> None:
     token = os.environ.get("ESIOS_TOKEN", "").strip()
     hourly = {"status": "unavailable", "reason": "token_required", "years": []}
     if token:
-        hourly = {"status": "configured", "catalogue": esios_probe(token), "years": []}
+        hourly = build_esios_hourly(token, args.start_year, args.end_year, today, args.force_esios)
 
     prices = [] if args.skip_omie else omie_monthly(args.omie_days, today)
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
@@ -300,7 +452,14 @@ def main() -> None:
             for key, widget in REDATA_STORAGE_WIDGETS.items()
         ]
         + [
-            {"key": "esios", "url": ESIOS_BASE, "last_update": None},
+            {
+                "key": "esios",
+                "url": ESIOS_BASE,
+                "last_update": max(
+                    (item.get("values_updated_at") or "" for item in hourly.get("indicators", {}).values()),
+                    default="",
+                ) or None,
+            },
             {"key": "omie", "url": OMIE_DOWNLOAD, "last_update": generated_at if prices else None},
         ],
     }
@@ -314,7 +473,10 @@ def main() -> None:
             "monthly_start": min((row["period"] for row in generation), default=None),
             "monthly_end": max((row["period"] for row in generation), default=None),
             "hourly_status": hourly["status"],
+            "hourly_start": hourly.get("start_utc"),
+            "hourly_end": hourly.get("end_utc"),
         },
+        "hourly": {"files": hourly.get("files", [])},
     }
     (PUBLIC / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

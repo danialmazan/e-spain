@@ -1,5 +1,31 @@
 # Changelog
 
+## 2026-09-16 — two-row header, filter polish and marginal-page removal
+
+- Moved the page navigation to a dedicated row below the E-Spain identity at every viewport and aligned the title and strap on a shared text baseline.
+- Aligned the daily-shape filter fields and actions, made the weekday menu close on outside tap/click or Escape, and increased mobile touch targets for Android and iOS-sized screens.
+- Removed the Marginal price page, navigation entry, OMIE source listing and related product-method copy because the available price context does not identify the price-setting technology and the historical classification is not current.
+- Files changed: `frontend/src/App.tsx`, `frontend/src/styles.css`, `frontend/src/types.ts`, `README.md`, `docs/RUNBOOK.md`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run `npm run build`, inspect the two-row header and daily-shape filters in EN/ES at desktop, 390px iOS and 360px Android widths, then verify outside-click dismissal and the absence of Marginal price from navigation and Sources / method.
+
+## 2026-09-16 — daily-shape filters and Sources / method page
+
+- Reworked the identity into a self-link reading “E-Spain: an analysis of Spain's electricity system”, while retaining the established IBM Plex typography.
+- Added chart-specific month range, week, multi-weekday and multi-date controls to “The shape of a day”, plus reset behavior and an included-hour count. These controls do not change the generation mix, trend or balance dates.
+- Rewrote the interconnector and coverage introductions, moved source provenance into a new bilingual Sources / method page, and replaced the repeated source footer with a portfolio link and dataset update date.
+- Added explicit marginal-page copy explaining that the historical technology classifier has not yet been imported and that the visible OMIE series is only a rolling 120-day monthly price context.
+- Files changed: `frontend/src/App.tsx`, `frontend/src/styles.css`, `frontend/src/types.ts`, `README.md`, `docs/RUNBOOK.md`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run `npm run build`, open Generation and combine the chart-specific filters, verify reset and unchanged global dates, then check Marginal price and Sources / method in EN/ES at desktop and 390px.
+
+## 2026-09-14 — measured e·sios hourly archive
+
+- Activated the saved `ESIOS_TOKEN` without exposing it and replaced the hourly unavailable states with 67,511 measured peninsular intervals covering 2019 through 13 September 2026.
+- Added pinned live-catalogue, name, MW magnitude, source-frequency, geography, duplicate, checksum, cadence, missing-value, and DST validation. UTC is derived from REE's offset-aware local timestamp to preserve both autumn repeated hours.
+- Added lazy yearly hourly shards, a selected-technology daily demand-share profile, and Solar-PV-default Coverage results with overall, monthly, and hour-of-day statistics. Unsupported hourly technologies are visibly disabled and missing observations are excluded and counted.
+- Added an R refresh wrapper so `npm run data:fetch` automatically inherits `ESIOS_TOKEN` from `~/.Renviron` without printing it.
+- Files changed: `.gitignore`, `scripts/`, `tests/`, `frontend/public/data/`, `frontend/src/`, `package.json`, `README.md`, `docs/RUNBOOK.md`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run `npm run data:fetch`, `npm run data:validate`, `python3 -m unittest discover -s tests`, and `npm run build`; inspect Generation and Coverage in EN/ES at desktop and 390px.
+
 ## 2026-09-13 — signed net-country stacking
 
 - Corrected the net interconnector chart to use sign-separated stacking: each country's imports and exports are netted first, positive country totals stack upward, and negative country totals stack downward without crossing zero.
@@ -101,3 +127,8 @@
 - Extended the monthly sample store through March 2026, made monthly net imports vary materially so balance/interconnector charts are not flat, updated default page ranges to `2019-01` through `2026-03`, removed the capacity-generation index chart, widened the selected-source trend chart, padded the coverage timeline to the selected range, and increased chart margins / emissions-axis width to prevent clipped labels.
 - Files changed: `backend/app/sample_store.py`, `frontend/src/App.tsx`, `frontend/src/styles.css`, `docs/CHANGELOG.md`, `docs/PROMPT_LOG.md`.
 - Reproduce: run `python3 scripts/build_sample_store.py`, `./backend/.venv/bin/pytest`, `npm run build`, then restart the app.
+## 2026-09-15 — public path moved to /e-spain/
+
+- Changed the GitHub Pages public base path from `/ree-dashboard/` to `/e-spain/`, including Vite asset URLs, canonical/Open Graph metadata, README, and runbook instructions.
+- Files changed: `frontend/vite.config.ts`, `frontend/vite.config.js`, `frontend/index.html`, `README.md`, `docs/RUNBOOK.md`.
+- Reproduce: run `npm run build`, then inspect `frontend/dist/index.html` and built asset paths for `/e-spain/`.

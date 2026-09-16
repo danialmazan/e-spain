@@ -8,7 +8,7 @@
     "build": "npm --prefix frontend run build",
     "frontend:dev": "npm --prefix frontend run dev",
     "frontend:build": "npm --prefix frontend run build",
-    "data:fetch": "python3 scripts/ingest_sources.py",
+    "data:fetch": "Rscript scripts/refresh_data.R",
     "data:validate": "python3 scripts/validate_data.py"
   }
 }
