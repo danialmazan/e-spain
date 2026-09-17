@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-17 — live release and portfolio publication
+
+- Published the measured-hourly-data dashboard and the completed navigation, filter, mobile, and Marginal-price removal changes to `https://danielalmazan.com/e-spain/`.
+- Added E-Spain as the first project in the bilingual Other / Otros section on both the main `danielalmazan.com` landing page and `danielalmazan.com/other/`, using the shared portfolio catalogue.
+- Verified successful GitHub Pages workflows, cache-busted live output, EN/ES project links and copy, 390px layout, clean browser consoles, canonical/asset paths, and synchronized branches.
+- Files changed in this repository: `docs/CHANGELOG.md` and `docs/PROMPT_LOG.md`; the portfolio catalogue and generated homepage/Other indexes were updated in their established separate publication repositories.
+- Reproduce: run `npm run data:validate`, `npm run build`, then check `/e-spain/`, `/?lang=es`, and `/other/?lang=es` with cache-busting query parameters.
+
 ## 2026-09-16 — two-row header, filter polish and marginal-page removal
 
 - Moved the page navigation to a dedicated row below the E-Spain identity at every viewport and aligned the title and strap on a shared text baseline.

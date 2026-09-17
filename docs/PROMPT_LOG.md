@@ -1,5 +1,9 @@
 # Prompt Log
 
+## 2026-09-17 08:14 Europe/Madrid
+
+- Prompt: "Commit, push and deploy live to danielalmazan.com/e-spain. Add it as the first item in the Other section of the main landing page and the Other page, with the description 'An analysis of the technologies and patterns of electricity generation in Spain' and its Spanish translation."
+
 ## 2026-09-16 23:09 Europe/Madrid
 
 - Prompt: "Move the page selection below the E-Spain title, vertically align the identity text, align and fix dismissal of the daily-shape filter controls, verify Android/iOS mobile behavior, and remove the Marginal price section plus its Sources / method material."
