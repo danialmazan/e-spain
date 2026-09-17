@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-17 — restore hourly Pages data and require the e·sios secret
+
+- Diagnosed the live Coverage and daily-shape unavailable state as a GitHub Actions refresh performed without the repository `ESIOS_TOKEN` secret.
+- Added the saved token as an encrypted repository secret and made the Pages workflow fail before ingestion when the secret is absent, preserving the last validated deployment.
+- Files changed: `.github/workflows/deploy-pages.yml`, `docs/RUNBOOK.md`, `docs/CHANGELOG.md`, and `docs/PROMPT_LOG.md`.
+- Reproduce: run the Pages workflow, confirm its credential guard and source refresh succeed, then verify the live manifest reports hourly data as `available` with yearly shards.
+
 ## 2026-09-17 — live release and portfolio publication
 
 - Published the measured-hourly-data dashboard and the completed navigation, filter, mobile, and Marginal-price removal changes to `https://danielalmazan.com/e-spain/`.

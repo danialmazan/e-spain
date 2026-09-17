@@ -21,7 +21,9 @@ ESIOS_TOKEN=your-token-here
 
 `npm run data:fetch` starts through R, so R loads `.Renviron` and passes the token to the Python ingestion child without printing it. A direct Python run requires `ESIOS_TOKEN` to already exist in that process environment.
 
-Add the same value as the `ESIOS_TOKEN` GitHub Actions secret. Without it, the pipeline still publishes monthly REData generation, capacity, storage and physical border exchanges, while hourly generation/coverage modules visibly report `token_required`.
+Add the same value as the `ESIOS_TOKEN` GitHub Actions secret. A direct local ingestion run without it still writes monthly REData generation, capacity, storage and physical border exchanges, while hourly generation/coverage modules visibly report `token_required`.
+
+The Pages workflow requires this secret before refreshing. If it is absent, the workflow fails before ingestion and leaves the last validated deployment live rather than publishing a token-required hourly state.
 
 ## 3. Refresh sources
 

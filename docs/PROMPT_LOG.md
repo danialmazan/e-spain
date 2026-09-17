@@ -1,5 +1,9 @@
 # Prompt Log
 
+## 2026-09-17 08:56 Europe/Madrid
+
+- Prompt: "I get this on both charts in Hourly Coverage and The Shape of a Day: 'The public REData generation and demand widgets return errors at hourly granularity. No monthly proxy is used for an hourly calculation'."
+
 ## 2026-09-17 08:14 Europe/Madrid
 
 - Prompt: "Commit, push and deploy live to danielalmazan.com/e-spain. Add it as the first item in the Other section of the main landing page and the Other page, with the description 'An analysis of the technologies and patterns of electricity generation in Spain' and its Spanish translation."

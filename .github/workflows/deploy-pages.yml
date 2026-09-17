@@ -30,6 +30,14 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci --prefix frontend
+      - name: Require e·sios credentials
+        env:
+          ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+        run: |
+          if [ -z "$ESIOS_TOKEN" ]; then
+            echo "::error::ESIOS_TOKEN is not configured; keeping the last validated Pages deployment."
+            exit 1
+          fi
       - name: Refresh public sources
         env:
           ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
